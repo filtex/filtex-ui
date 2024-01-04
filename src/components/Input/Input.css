@@ -1,0 +1,60 @@
+.filtex .node {
+    background-color: rgba(var(--background-color), 1);
+    box-shadow: var(--box-shadow);
+    margin: 5px 15px 5px 0;
+    padding: 7.5px;
+    border: none;
+    outline: var(--border);
+    border-radius: var(--border-radius);
+    color: rgba(var(--text-color), 1);
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+    font-family: Verdana;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.filtex .node.logic:not(.none) {
+    color: rgba(var(--logic-text-color), 1);
+}
+
+.filtex .node.logic::placeholder {
+    color: rgba(var(--logic-text-color), .5);
+}
+
+.filtex .node.field:not(.none) {
+    color: rgba(var(--field-text-color), 1);
+}
+
+.filtex .node.field::placeholder {
+    color: rgba(var(--field-text-color), .5);
+}
+
+.filtex .node.operator:not(.none) {
+    color: rgba(var(--operator-text-color), 1);
+}
+
+.filtex .node.operator::placeholder {
+    color: rgba(var(--operator-text-color), .5);
+}
+
+.filtex .node.value:not(.none) {
+    color: rgba(var(--value-text-color), 1);
+}
+
+.filtex .node.value::placeholder {
+    color: rgba(var(--value-text-color), .5);
+}
+
+.filtex .node.none:is(.touched) {
+    outline: 1px solid rgba(var(--invalid-border-color), 1) !important;
+}
+
+.filtex .indent {
+    margin-left: 35px;
+}
+
+.filtex input.node::selection {
+    background-color: rgba(var(--selection-color), 1);
+}
