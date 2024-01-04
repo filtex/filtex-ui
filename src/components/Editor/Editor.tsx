@@ -41,6 +41,35 @@ const Editor = (props: EditorProps) => {
         }
     };
 
+    const handleKeyUp = (e: any) => {
+        const { key } = e;
+
+        switch (key) {
+            case 'ArrowLeft':
+                if (onChange) {
+                    onChange({
+                        value: e.target.value,
+                        cursor: {
+                            start: e.target.selectionStart,
+                            end: e.target.selectionEnd
+                        }
+                    });
+                }
+                break;
+            case 'ArrowRight':
+                if (onChange) {
+                    onChange({
+                        value: e.target.value,
+                        cursor: {
+                            start: e.target.selectionStart,
+                            end: e.target.selectionEnd
+                        }
+                    });
+                }
+                break;
+        }
+    };
+
     const handleFocus = (e: any) => {
         if (onChange) {
             onChange({
@@ -91,6 +120,7 @@ const Editor = (props: EditorProps) => {
                 ref={props.inputRef}
                 value={value}
                 onChange={handleChange}
+                onKeyUp={handleKeyUp}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 onClick={handleClick}
