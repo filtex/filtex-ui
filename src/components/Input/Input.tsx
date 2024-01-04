@@ -51,6 +51,11 @@ const Input = (props: InputProps) => {
         }, 100);
     };
 
+    const getWidth = () => {
+        const width = props.value?.length * 12;
+        return Math.max(100, Math.min(175, width)) + 'px';
+    };
+
     return (
         props.hidden
             ? <></>
@@ -60,6 +65,7 @@ const Input = (props: InputProps) => {
                 autoComplete={'none'}
                 spellCheck={false}
                 value={props.value ?? ''}
+                style={{ width: getWidth() }}
                 onClick={handleClick}
                 onFocus={handleFocus}
                 onBlur={() => setTouched(true)}
