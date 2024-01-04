@@ -16,6 +16,10 @@ export interface FiltexProps {
     theme?: string;
     modes?: string[];
     mode?: string;
+    hideMenuButton?: boolean;
+    hideSubmitButton?: boolean;
+    hideResetButton?: boolean;
+    hideSwitchButton?: boolean;
     value?: any;
     onSubmit?: (value: any) => void;
 }
@@ -29,6 +33,7 @@ const Filtex = (props: FiltexProps) => {
     const [value, setValue] = useState(props.value || '');
     const filtexRef = createRef<HTMLDivElement>();
     const [options, setOptions] = useState<any>({ hidden: true });
+    const [buttons, setButtons] = useState<any[]>([]);
 
     const textQueryConverter = useMemo(() => new TextQueryConverter(props.metadata), [props.metadata]);
     const jsonQueryConverter = useMemo(() => new JsonQueryConverter(props.metadata), [props.metadata]);
@@ -104,6 +109,78 @@ const Filtex = (props: FiltexProps) => {
         setTree(null);
         setText('');
     };
+
+    const openFiltexMenu = (ev: any) => {
+        if (buttons.length === 0) {
+            return;
+        }
+
+        const x = ev.target.offsetLeft + ev.target.clientWidth * 0.1;
+        const y = ev.target.offsetTop + ev.target.clientHeight * 0.2;
+        const fn = {
+            fn: (v: string) => {
+                switch (v) {
+                    case 'submit':
+                        handleSubmit();
+                        break;
+                    case 'reset':
+                        handleReset();
+                        break;
+                    case 'switch-text':
+                        handleSwitchText();
+                        break;
+                    case 'switch-tree':
+                        handleSwitchTree();
+                        break;
+                }
+
+                setOptions({ hidden: true });
+            }
+        };
+
+        setOptions({ type: 'options', hidden: false, values: buttons, x: x, y: y, fn: fn, elementRef: ev.target });
+    };
+
+    useEffect(() => {
+        if (props.hideMenuButton) {
+            setButtons([]);
+            return;
+        }
+
+        const values = [];
+
+        if (!props.hideSubmitButton) {
+            values.push({
+                label: 'Submit',
+                value: 'submit'
+            });
+        }
+
+        if (!props.hideResetButton) {
+            values.push({
+                label: 'Reset',
+                value: 'reset'
+            });
+        }
+
+        if (!props.hideSwitchButton) {
+            if (modes.length > 1 && modes.includes('text') && mode !== 'text') {
+                values.push({
+                    label: 'Switch Text',
+                    value: 'switch-text'
+                });
+            }
+
+            if (modes.length > 1 && modes.includes('tree') && mode !== 'tree') {
+                values.push({
+                    label: 'Switch Tree',
+                    value: 'switch-tree'
+                });
+            }
+        }
+
+        setButtons(values);
+    }, [props.hideMenuButton, props.hideSubmitButton, props.hideResetButton, props.hideSwitchButton, modes, mode]);
 
     useEffect(() => {
         const themes = [...Themes, ...(props.themes || [])];
@@ -181,6 +258,16 @@ const Filtex = (props: FiltexProps) => {
                                 onValueChange={handleTreeChange}
                                 onValueSubmit={handleTreeSubmit}
                                 hidden={mode !== 'tree'} />
+                            : <></>
+                    }
+                    {
+                        buttons.length > 0
+                            ? <>
+                                <button
+                                    className="menu"
+                                    onClick={(ev) => openFiltexMenu(ev)} style={{ rotate: '90deg' }}>...
+                                </button>
+                            </>
                             : <></>
                     }
                     <Dropdown options={options} />
