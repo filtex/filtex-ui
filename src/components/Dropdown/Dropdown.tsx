@@ -117,6 +117,13 @@ const Dropdown = (props: DropdownProps) => {
         }
     }, [elementRef, handleValueChange, hidden, option, props.options, scrollTo, values]);
 
+    const handleWheel = (ev: any) => {
+        containerRef.current.scrollTo({
+            top: containerRef.current.scrollTop + ev.deltaY,
+            behavior: 'auto'
+        });
+    }
+
     const handleClick = useCallback((ev: any) => {
         if (!props.options) {
             return;
@@ -238,7 +245,7 @@ const Dropdown = (props: DropdownProps) => {
     }
 
     return (
-        <div ref={containerRef} className={props.options?.type === 'options' ? 'dropdown scrollable' : 'dropdown'} style={style} hidden={hidden}>
+        <div ref={containerRef} className={props.options?.type === 'options' ? 'dropdown scrollable' : 'dropdown'} style={style} hidden={hidden} onWheel={handleWheel}>
             {
                 props.options?.type === 'options' && values.map((x: any, i: number) => (
                     <span key={i} className={option === i ? 'item active' : 'item'}
