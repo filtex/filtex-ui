@@ -2,3 +2,30 @@
     display: table;
     width: 100%;
 }
+
+.filtex .text-container,
+.filtex .tree-container {
+    float: left;
+    width: calc(100%);
+}
+
+.filtex:has(> .menu) .text-container,
+.filtex:has(> .menu) .tree-container {
+    width: calc(100% - 50px);
+}
+
+.filtex > .menu {
+    float: right;
+    background-color: rgba(var(--background-color), 1);
+    box-shadow: var(--box-shadow);
+    position: absolute;
+    margin: 15px 0 0 10px;
+    padding: 0 5px 7.5px 7.5px;
+    border: none;
+    outline: var(--border);
+    border-radius: var(--border-radius);
+    color: rgba(var(--text-color), 1);
+    letter-spacing: 2.5px;
+    cursor: pointer;
+    opacity: .75;
+}
