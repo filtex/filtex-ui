@@ -1,0 +1,109 @@
+.filtex .editor {
+    position: relative;
+    text-align: left;
+    box-sizing: border-box;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgba(var(--background-color), 1);
+    border: none;
+    outline: var(--border);
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+    color: rgba(var(--text-color), 1);
+    font-family: Verdana;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.filtex .editor textarea {
+    margin: 0;
+    border: 0;
+    background: none;
+    box-sizing: inherit;
+    display: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    tab-size: inherit;
+    text-indent: inherit;
+    text-rendering: inherit;
+    text-transform: inherit;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    position: absolute;
+    top: 0;
+    left: 15px;
+    right: 15px;
+    height: 100%;
+    resize: none;
+    color: transparent;
+    caret-color: rgba(var(--text-color), 1);
+    overflow: hidden;
+    padding: 15px 0;
+    outline: none;
+    overflow-x: hidden;
+}
+
+.filtex .editor textarea:empty {
+    -webkit-text-fill-color: inherit !important;
+}
+
+.filtex .editor textarea::selection {
+    background-color: rgba(var(--selection-color), 1);
+}
+
+.filtex .editor textarea::-webkit-input-placeholder {
+    color: rgba(var(--text-color), .5);
+}
+
+.filtex .editor textarea:-moz-placeholder {
+    color: rgba(var(--text-color), .5);
+    opacity: 1;
+}
+
+.filtex .editor textarea::-moz-placeholder {
+    color: rgba(var(--text-color), .5);
+    opacity: 1;
+}
+
+.filtex .editor textarea:-ms-input-placeholder {
+    color: rgba(var(--text-color), .5);
+}
+
+.filtex .editor textarea::-ms-input-placeholder {
+    color: rgba(var(--text-color), .5);
+}
+
+.filtex .editor textarea::placeholder {
+    color: rgba(var(--text-color), .5);
+}
+
+.filtex .editor pre {
+    margin: 0;
+    border: 0;
+    background: none;
+    box-sizing: inherit;
+    display: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    tab-size: inherit;
+    text-indent: inherit;
+    text-rendering: inherit;
+    text-transform: inherit;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    position: relative;
+    pointer-events: none;
+    padding: 15px 5px;
+    margin: 0 10px;
+    overflow-x: hidden;
+}
