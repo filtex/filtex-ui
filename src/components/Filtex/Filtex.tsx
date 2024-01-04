@@ -1,5 +1,6 @@
 import React, {createRef, useEffect, useState} from "react";
-import {ThemeContext} from "../../contexts";
+import Dropdown from "../Dropdown/Dropdown";
+import {DropdownContext, ThemeContext} from "../../contexts";
 import {DefaultTheme, FiltexTheme, Themes} from "../../themes";
 import {toRGB} from "../../utils";
 
@@ -13,6 +14,7 @@ export interface FiltexProps {
 const Filtex = (props: FiltexProps) => {
     const [theme, setTheme] = useState<FiltexTheme>(DefaultTheme);
     const filtexRef = createRef<HTMLDivElement>();
+    const [options, setOptions] = useState<any>({ hidden: true });
 
     useEffect(() => {
         const themes = [...Themes, ...(props.themes || [])];
@@ -44,9 +46,12 @@ const Filtex = (props: FiltexProps) => {
 
     return (
         <ThemeContext.Provider value={theme}>
-            <div className="filtex" ref={filtexRef}>
-                Filtex
-            </div>
+            <DropdownContext.Provider value={{options, setOptions}}>
+                <div className="filtex" ref={filtexRef}>
+                    Filtex
+                    <Dropdown options={options} />
+                </div>
+            </DropdownContext.Provider>
         </ThemeContext.Provider>
     )
 };
