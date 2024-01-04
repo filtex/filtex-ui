@@ -4,6 +4,8 @@ import Editor, {OnChangeOptions} from "../Editor/Editor";
 import {TokenType} from "../../constants";
 import {TextQueryTokenizer} from "../../tokenizers";
 import {TextQueryValidator} from "../../validators";
+import {QuerySuggester} from "../../suggesters";
+import {getCursorState} from "../../utils";
 import {DropdownContext} from "../../contexts";
 
 import './QueryText.css';
@@ -29,6 +31,7 @@ const QueryText = (props: QueryTextProps) => {
 
     const textQueryTokenizer = useMemo(() => new TextQueryTokenizer(props.metadata), [props.metadata]);
     const textQueryValidator = useMemo(() => new TextQueryValidator(props.metadata, textQueryTokenizer), [props.metadata, textQueryTokenizer]);
+    const querySuggester = useMemo(() => new QuerySuggester(props.metadata), [props.metadata]);
 
     useEffect(() => {
         setValue(props.value);
@@ -67,6 +70,158 @@ const QueryText = (props: QueryTextProps) => {
             setValid(true);
         } catch {
             setValid(false);
+        }
+
+        const tokenIndex = findSelectedTokenIndex(tokens, options.cursor.start, options.cursor.end);
+
+        const result = querySuggester.suggest(tokens, tokenIndex);
+        const selectedToken = tokenIndex !== null ? tokens[tokenIndex] : null;
+        const search = selectedToken && selectedToken.value.length !== options.cursor.end - options.cursor.start ? result.selectedToken?.value : null;
+
+        const prevTokens = tokenIndex !== null ? tokens.slice(0, tokenIndex) : tokens;
+        const lastToken = prevTokens.filter(x => x.type !== TokenType.TokenTypeSpace).at(-1) ?? null;
+        const lastFieldToken = prevTokens.filter(x => x.type === TokenType.TokenTypeField).at(-1) ?? null;
+        const lastFieldType = textQueryTokenizer.getFieldType(lastFieldToken?.value);
+
+        let type = 'options';
+        if (lastToken?.type.isComparerTokenType()) {
+            switch (lastFieldType?.name) {
+                case 'date':
+                    type = 'date';
+                    break;
+                case 'time':
+                    type = 'time';
+                    break;
+                case 'datetime':
+                    type = 'datetime';
+                    break;
+            }
+        }
+
+        let suggestions;
+
+        if (search && search.trim().length > 0) {
+            suggestions = result.suggestions.filter((s) => s.value.toLowerCase().replace(/ /g, '').includes(search.toLowerCase().replace(/ /g, '')));
+        } else {
+            suggestions = result.suggestions;
+        }
+
+        if (input) {
+            const selectedStart = prevTokens.reduce((acc, cur) => acc + cur.value.length, 0);
+            const state = getCursorState(input, selectedStart);
+            const x = state.coordinates.x + input.parentElement.offsetLeft - input.offsetLeft;
+            const y = state.coordinates.y + input.parentElement.offsetTop + input.clientHeight + 5;
+
+            let fn = {
+                fn: (v: any) => {
+                    if (!v) {
+                        return;
+                    }
+
+                    let tokens: Token[] = [];
+                    if (v.onSelected) {
+                        tokens = v.onSelected();
+                    }
+                    const newQuery = tokens.map(x => x.value).join('');
+
+                    setValue(newQuery);
+
+                    setTimeout(()=> {
+                        const { selectionStart } = input;
+
+                        handleChange({
+                            value: newQuery,
+                            cursor: {
+                                start: input.selectionStart,
+                                end: input.selectionEnd
+                            }
+                        });
+
+                        setSelectedTokenIndex(-1);
+
+                        input.selectionStart = selectionStart + v.value.length + 1;
+                        input.selectionEnd = selectionStart + v.value.length + 1;
+                        input.focus();
+                    }, 100);
+                }
+            };
+
+            if (type === 'date' || type === 'time' || type === 'datetime') {
+                const willCurTokenRemove = selectedToken && (
+                    selectedToken.type === TokenType.TokenTypeNone ||
+                    selectedToken.type.isValueTokenType());
+                fn = {
+                    fn: (v: any) => {
+
+                        const newTokens = [...prevTokens];
+
+                        let sliceCount = 1;
+
+                        if (willCurTokenRemove === false) {
+                            newTokens.push(tokens[tokenIndex]);
+                            sliceCount++;
+                        }
+
+                        let value = '';
+
+                        if (type === 'date') {
+                            value = `${v.year}-${(v.month + 1).toString().padStart(2, '0')}-${v.day.toString().padStart(2, '0')}`;
+                            newTokens.push(new Token(TokenType.TokenTypeDateValue, value));
+                        } else if (type === 'time') {
+                            value = `${v.hour.toString().padStart(2, '0')}:${v.minute.toString().padStart(2, '0')}:${v.second.toString().padStart(2, '0')}`;
+                            newTokens.push(new Token(TokenType.TokenTypeTimeValue, value));
+                        } else if (type === 'datetime') {
+                            value = `${v.year}-${(v.month + 1).toString().padStart(2, '0')}-${v.day.toString().padStart(2, '0')} ${v.hour.toString().padStart(2, '0')}:${v.minute.toString().padStart(2, '0')}:${v.second.toString().padStart(2, '0')}`;
+                            newTokens.push(new Token(TokenType.TokenTypeDateTimeValue, value));
+                        }
+
+                        const nextTokens = tokens
+                            .slice(tokenIndex + sliceCount, tokens.length);
+
+                        if (nextTokens.length === 0) {
+                            newTokens.push(new Token(TokenType.TokenTypeSpace, ' '));
+                        }
+
+                        nextTokens
+                            .forEach(token => newTokens.push(token));
+
+                        const newQuery = newTokens.map(x => x.value).join('');
+
+                        setValue(newQuery);
+
+                        setTimeout(()=> {
+                            const { selectionStart } = input;
+
+                            handleChange({
+                                value: newQuery,
+                                cursor: {
+                                    start: input.selectionStart,
+                                    end: input.selectionEnd
+                                }
+                            });
+
+                            setSelectedTokenIndex(-1);
+
+                            input.selectionStart = selectionStart + value.length + 1;
+                            input.selectionEnd = selectionStart + value.length + 1;
+                            input.focus();
+                        }, 100);
+                    }
+                };
+            }
+
+            setOptions({
+                type: type,
+                hidden: false,
+                isAnimated: true,
+                value: selectedToken?.value,
+                values: suggestions.map(x => ({ label: x.value, value: x })),
+                x: x,
+                y: y,
+                fn: fn,
+                elementRef: input,
+                adjustPosition: true
+            });
         }
     };
 
