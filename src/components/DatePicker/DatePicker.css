@@ -1,0 +1,27 @@
+.filtex .datepicker {
+    padding: 5px;
+    min-width: 180px;
+    max-width: 300px;
+}
+
+.filtex .datepicker .datepicker-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filtex .datepicker .datepicker-actions button {
+    display: table;
+    margin: 2.5px 5px;
+    padding: 7.5px 10px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    font-size: 10px;
+}
+
+.filtex .datepicker .datepicker-actions button:hover {
+    cursor: pointer;
+    background-color: rgba(var(--hover-background-color), 1);
+}
