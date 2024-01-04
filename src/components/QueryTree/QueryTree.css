@@ -1,0 +1,19 @@
+.filtex .row button {
+    display: none;
+    background-color: rgba(var(--background-color), 1);
+    box-shadow: var(--box-shadow);
+    position: absolute;
+    margin: 12.5px 15px 0 0;
+    padding: 0 5px 5px 7.5px;
+    border: none;
+    outline: var(--border);
+    border-radius: var(--border-radius);
+    color: rgba(var(--text-color), 1);
+    letter-spacing: 2.5px;
+    cursor: pointer;
+    opacity: .75;
+}
+
+.filtex .row:hover button {
+    display: inline-table;
+}
