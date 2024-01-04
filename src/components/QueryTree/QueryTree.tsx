@@ -1,6 +1,7 @@
 import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import { TokenType } from "../../constants";
 import {Metadata, Token} from "../../models";
+import {QuerySuggester} from "../../suggesters";
 import { JsonQueryTokenizer } from "../../tokenizers";
 import Input from "../Input/Input";
 import { DropdownContext } from "../../contexts";
@@ -22,6 +23,7 @@ const QueryTree = (props: QueryTreeProps) => {
     const [tokensTree, setTokensTree] = useState<any>([new Token(TokenType.TokenTypeNone, ''), [[new Token(TokenType.TokenTypeNone, ''), new Token(TokenType.TokenTypeNone, ''), new Token(TokenType.TokenTypeNone, '')]]]);
 
     const jsonQueryTokenizer =  useMemo(() => new JsonQueryTokenizer(props.metadata), [props.metadata]);
+    const querySuggester = useMemo(() => new QuerySuggester(props.metadata), [props.metadata]);
 
     const updateTokensTree = useCallback((tree: any[]) => {
         if (!tree || tree.length === 0) {
@@ -195,6 +197,40 @@ const QueryTree = (props: QueryTreeProps) => {
         setOptions({ hidden: true });
     };
 
+    const openDropdown = (ev: any, type: string, values: any[]) => {
+        const el = ev.target;
+        const x = el.offsetLeft;
+        const y = el.offsetTop + el.clientHeight * 1.5;
+        const fn = {
+            fn: (v: any) => {
+                let value;
+
+                if (type === 'date') {
+                    value = `${v.year}-${(v.month + 1).toString().padStart(2, '0')}-${v.day.toString().padStart(2, '0')}`;
+                } else if (type === 'time') {
+                    value = `${v.hour.toString().padStart(2, '0')}:${v.minute.toString().padStart(2, '0')}:${v.second.toString().padStart(2, '0')}`;
+                } else if (type === 'datetime') {
+                    value = `${v.year}-${(v.month + 1).toString().padStart(2, '0')}-${v.day.toString().padStart(2, '0')} ${v.hour.toString().padStart(2, '0')}:${v.minute.toString().padStart(2, '0')}:${v.second.toString().padStart(2, '0')}`;
+                } else {
+                    value = v.value;
+                }
+
+                const prototype = Object.getPrototypeOf(el);
+                const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
+                if (prototypeValueSetter) {
+                    prototypeValueSetter.call(el, value);
+                }
+                el.dispatchEvent(new Event('input', {bubbles: true}));
+                el.style.width = Math.max(85, Math.min(125, value.length * 10)) + 'px';
+                setTimeout(() => {
+                    setOptions({ hidden: true });
+                }, 100);
+            }
+        };
+
+        setOptions({ type, hidden: false, values: values, x: x, y: y, fn: fn, elementRef: el });
+    };
+
     const openGroupMenu = (ev: any, path: string) => {
         const values = [
             {
@@ -283,6 +319,121 @@ const QueryTree = (props: QueryTreeProps) => {
         setOptions({ type: 'options', hidden: false, values: values, x: x, y: y, fn: fn, elementRef: ev.target });
     };
 
+    const suggestLogic = (ev: any) => {
+        const tokens = [
+            new Token(TokenType.TokenTypeField, ' '),
+            new Token(TokenType.TokenTypeSpace, ' '),
+            new Token(TokenType.TokenTypeEqual, ' '),
+            new Token(TokenType.TokenTypeSpace, ' '),
+            new Token(TokenType.TokenTypeValue, ' '),
+            new Token(TokenType.TokenTypeSpace, ' ')
+        ];
+        const result = querySuggester.suggest(tokens);
+        let values = result.suggestions;
+
+        if (ev.target.value.length !== ev.target.selectionEnd - ev.target.selectionStart) {
+            values = values.filter((s) => s.value.toLowerCase().replace(/ /g,'').includes(ev.target.value.toLowerCase().replace(/ /g,'')));
+        }
+
+        openDropdown(ev, 'options', values.map(item => {
+            return {
+                label: item.value,
+                value: {
+                    value: item.value
+                }
+            };
+        }));
+    };
+
+    const suggestField = (ev: any) => {
+        const tokens: Token[] = [];
+        const result = querySuggester.suggest(tokens);
+        let values = result.suggestions;
+
+        if (ev.target.value.length !== ev.target.selectionEnd - ev.target.selectionStart) {
+            values = values.filter((s) => s.value.toLowerCase().replace(/ /g,'').includes(ev.target.value.toLowerCase().replace(/ /g,'')));
+        }
+
+        openDropdown(ev, 'options', values.map(item => {
+            return {
+                label: item.value,
+                value: {
+                    value: item.value
+                }
+            };
+        }));
+    };
+
+    const suggestOperator = (ev: any, data: any[]) => {
+        const tokens = [
+            new Token(TokenType.TokenTypeField, data[0].value),
+            new Token(TokenType.TokenTypeSpace, ' ')
+        ];
+        const result = querySuggester.suggest(tokens);
+        let values = result.suggestions;
+
+        if (ev.target.value.length !== ev.target.selectionEnd - ev.target.selectionStart) {
+            values = values.filter((s) => s.value.toLowerCase().replace(/ /g,'').includes(ev.target.value.toLowerCase().replace(/ /g,'')));
+        }
+
+        openDropdown(ev, 'options', values.map(item => {
+            return {
+                label: item.value,
+                value: {
+                    value: item.value
+                }
+            };
+        }));
+    };
+
+    const suggestValue = (ev: any, data: any[]) => {
+        const tokens = [
+            new Token(TokenType.TokenTypeField, data[0].value),
+            new Token(TokenType.TokenTypeSpace, ' '),
+            new Token(TokenType.TokenTypeEqual, data[1].value),
+            new Token(TokenType.TokenTypeSpace, ' ')
+        ];
+        const result = querySuggester.suggest(tokens);
+        let values = result.suggestions;
+
+        if (ev.target.value.length !== ev.target.selectionEnd - ev.target.selectionStart) {
+            values = values.filter((s) => s.value.toLowerCase().replace(/ /g,'').includes(ev.target.value.toLowerCase().replace(/ /g,'')));
+        }
+
+        if (!isValueAllowed(data)) {
+            return;
+        }
+
+        const selectedProperties = props.metadata.fields
+            .filter(prop => prop.label.toLowerCase() === data[0]?.value?.toLowerCase());
+        if (selectedProperties.length === 0) {
+            return;
+        }
+        const metaField = selectedProperties[0];
+
+        let type = 'options';
+        switch (metaField?.type) {
+            case 'date':
+                type = 'date';
+                break;
+            case 'time':
+                type = 'time';
+                break;
+            case 'datetime':
+                type = 'datetime';
+                break;
+        }
+
+        openDropdown(ev, type, values.map(item => {
+            return {
+                label: item.value,
+                value: {
+                    value: item.value
+                }
+            };
+        }));
+    };
+
     const isValueAllowed = (data: any) => {
         const lastOperatorToken = data[1] as Token;
         if (!lastOperatorToken || lastOperatorToken.type === TokenType.TokenTypeNone) {
@@ -310,9 +461,10 @@ const QueryTree = (props: QueryTreeProps) => {
                             class="logic"
                             type={data[0]?.type.name}
                             value={data[0]?.value}
-                            onSuggestionRequested={(ev) => {}}
+                            onSuggestionRequested={(ev) => suggestLogic(ev)}
                             onChange={(ev) => {
                                 handleChange(path + '/0', ev.target.value);
+                                suggestLogic(ev);
                             }}
                             onSubmit={handleSubmit}
                         />
@@ -342,9 +494,10 @@ const QueryTree = (props: QueryTreeProps) => {
                     class="field"
                     type={data[0]?.type.name}
                     value={data[0]?.value}
-                    onSuggestionRequested={(ev) => {}}
+                    onSuggestionRequested={(ev) => suggestField(ev)}
                     onChange={(ev) => {
                         handleChange(path + '/0', ev.target.value);
+                        suggestField(ev);
                     }}
                     onSubmit={handleSubmit}
                 />
@@ -354,9 +507,10 @@ const QueryTree = (props: QueryTreeProps) => {
                     class="operator"
                     type={data[1]?.type.name}
                     value={data[1]?.value}
-                    onSuggestionRequested={(ev) => {}}
+                    onSuggestionRequested={(ev) => suggestOperator(ev, data)}
                     onChange={(ev) => {
                         handleChange(path + '/1', ev.target.value);
+                        suggestOperator(ev, data);
                     }}
                     onSubmit={handleSubmit}
                 />
@@ -371,9 +525,10 @@ const QueryTree = (props: QueryTreeProps) => {
                                 type={v.type.name}
                                 value={v.value}
                                 hidden={!isValueAllowed(data)}
-                                onSuggestionRequested={(ev) => {}}
+                                onSuggestionRequested={(ev) => suggestValue(ev, data)}
                                 onChange={(ev) => {
                                     handleChange(path + '/2/' + i, ev.target.value);
+                                    suggestValue(ev, data);
                                 }}
                                 onSubmit={handleSubmit}
                             />
@@ -386,9 +541,10 @@ const QueryTree = (props: QueryTreeProps) => {
                             type={data[2]?.type.name}
                             value={data[2]?.value}
                             hidden={!isValueAllowed(data)}
-                            onSuggestionRequested={(ev) => {}}
+                            onSuggestionRequested={(ev) => suggestValue(ev, data)}
                             onChange={(ev) => {
                                 handleChange(path + '/2', ev.target.value);
+                                suggestValue(ev, data);
                             }}
                             onSubmit={handleSubmit}
                         />
