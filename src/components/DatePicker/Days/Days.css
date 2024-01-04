@@ -1,0 +1,95 @@
+.filtex .days .days-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 5px;
+}
+
+.filtex .days .days-header button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 5px;
+    min-width: 30px;
+    margin: 5px 0;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+}
+
+.filtex .days .days-header button:hover {
+    cursor: pointer;
+    background-color: rgba(var(--hover-background-color), 1);
+}
+
+.filtex .days .days-header .arrow-left {
+    display: inline-block;
+    border: solid rgba(var(--text-color), 1);
+    border-width: 0 1px 1px 0;
+    padding: 2.5px;
+    margin-left: 3px;
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+.filtex .days .days-header .arrow-right {
+    display: inline-block;
+    border: solid rgba(var(--text-color), 1);
+    border-width: 0 1px 1px 0;
+    padding: 2.5px;
+    margin-right: 3px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.filtex .days .days-names {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.filtex .days .days-names div {
+    padding: 10px 2px;
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    flex: 0 12%;
+    font-size: 10px;
+    opacity: .75;
+}
+
+.filtex .days .days-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.filtex .days .days-content button {
+    padding: 5px 0;
+    margin: 5px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    flex: 0 10%;
+}
+
+.filtex .days .days-content button:hover {
+    cursor: pointer;
+    background-color: rgba(var(--hover-background-color), 1);
+}
+
+.filtex .days .days-content button.selected {
+    background-color: rgba(var(--active-background-color), 1);
+}
+
+.filtex .days .days-content button.today {
+    border: 1px dashed rgba(var(--selection-color), 1);
+}
+
+.filtex .days .days-content button:not(.current) {
+    opacity: .5;
+}
