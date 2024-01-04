@@ -17,6 +17,7 @@ export interface EditorProps {
     value: string;
     onChange: (opts: OnChangeOptions) => void;
     onSubmit: () => void;
+    selectionFn: (position: number) => { start: number, end: number };
     coloringFn: (value: string) => string;
     inputRef: React.RefObject<HTMLTextAreaElement>;
 }
@@ -28,6 +29,7 @@ const Editor = (props: EditorProps) => {
         value,
         onChange,
         onSubmit,
+        selectionFn,
         coloringFn
     } = props;
 
@@ -125,6 +127,14 @@ const Editor = (props: EditorProps) => {
         }, 100);
     };
 
+    const handleDoubleClick = (e: any) => {
+        const position = e.target.selectionStart;
+        const { start, end } = selectionFn(position);
+
+        e.target.selectionStart = start;
+        e.target.selectionEnd = end;
+    };
+
     const handleScrollCapture = (e: any) => {
         preRef.current.scrollLeft = e.target.scrollLeft;
     };
@@ -142,6 +152,7 @@ const Editor = (props: EditorProps) => {
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 onClick={handleClick}
+                onDoubleClick={handleDoubleClick}
                 onScrollCapture={handleScrollCapture}
                 placeholder={label}
                 autoCapitalize="off"
