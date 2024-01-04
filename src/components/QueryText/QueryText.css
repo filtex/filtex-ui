@@ -1,0 +1,61 @@
+.filtex .query-text.invalid .editor {
+    outline: 1px solid rgba(var(--invalid-border-color), 1) !important;
+}
+
+.filtex .token.field {
+    color: rgba(var(--field-text-color), 1);
+}
+
+.filtex .token.value,
+.filtex .token.string-value,
+.filtex .token.number-value,
+.filtex .token.boolean-value,
+.filtex .token.date-value,
+.filtex .token.time-value,
+.filtex .token.datetime-value {
+    color: rgba(var(--value-text-color), 1);
+}
+
+.filtex .token.equal,
+.filtex .token.not-equal,
+.filtex .token.less-than,
+.filtex .token.less-than-or-equal,
+.filtex .token.greater-than,
+.filtex .token.greater-than-or-equal,
+.filtex .token.blank,
+.filtex .token.not-blank,
+.filtex .token.contain,
+.filtex .token.not-contain,
+.filtex .token.start-with,
+.filtex .token.not-start-with,
+.filtex .token.end-with,
+.filtex .token.not-end-with,
+.filtex .token.in,
+.filtex .token.not-in {
+    color: rgba(var(--operator-text-color), 1);
+}
+
+.filtex .token.comma,
+.filtex .token.slash {
+    color: rgba(var(--separator-text-color), 1);
+}
+
+.filtex .token.and,
+.filtex .token.or {
+    color: rgba(var(--logic-text-color), 1);
+}
+
+.filtex .token.open-bracket,
+.filtex .token.close-bracket {
+    color: rgba(var(--bracket-text-color), 1);
+}
+
+.filtex .token.selected:not(.space) {
+    outline: 1px solid rgba(var(--selection-color), 1);
+    outline-offset: 2px;
+}
+
+.filtex .token.none:not(.selected) {
+    padding-bottom: 2.5px;
+    border-bottom: 1px dashed rgba(var(--invalid-border-color), 1);
+}
