@@ -1,4 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import DatePicker from "../DatePicker/DatePicker";
+import TimePicker from "../TimePicker/TimePicker";
+import DateTimePicker from "../DateTimePicker/DateTimePicker";
 
 import './Dropdown.css';
 
@@ -173,6 +176,27 @@ const Dropdown = (props: DropdownProps) => {
                     <span key={i} className={option === i ? 'item active' : 'item'}
                           onClick={() => handleValueChange(x.value)}>{x.label}</span>
                 ))
+            }
+
+            {
+                props.options?.type !== 'date' ? <></> :
+                    <DatePicker
+                        value={props.options?.value}
+                        onValueChange={handleValueChange} />
+            }
+
+            {
+                props.options?.type !== 'time' ? <></> :
+                    <TimePicker
+                        value={props.options?.value}
+                        onValueChange={handleValueChange} />
+            }
+
+            {
+                props.options?.type !== 'datetime' ? <></> :
+                    <DateTimePicker
+                        value={props.options?.value}
+                        onValueChange={handleValueChange} />
             }
         </div>
     );
