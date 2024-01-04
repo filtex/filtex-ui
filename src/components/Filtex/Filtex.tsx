@@ -1,6 +1,8 @@
 import React, {createRef, useCallback, useEffect, useMemo, useState} from "react";
 import {Metadata} from "../../models";
 import {JsonQueryConverter, TextQueryConverter} from "../../converters";
+import {JsonQueryValidator, TextQueryValidator} from "../../validators";
+import {JsonQueryTokenizer, TextQueryTokenizer} from "../../tokenizers";
 import QueryText from "../QueryText/QueryText";
 import QueryTree from "../QueryTree/QueryTree";
 import Dropdown from "../Dropdown/Dropdown";
@@ -20,6 +22,7 @@ export interface FiltexProps {
     hideSubmitButton?: boolean;
     hideResetButton?: boolean;
     hideSwitchButton?: boolean;
+    autoSubmitEnabled?: boolean;
     value?: any;
     onSubmit?: (value: any) => void;
 }
@@ -34,6 +37,7 @@ const Filtex = (props: FiltexProps) => {
     const filtexRef = createRef<HTMLDivElement>();
     const [options, setOptions] = useState<any>({ hidden: true });
     const [buttons, setButtons] = useState<any[]>([]);
+    const [changeTimer, setChangeTimer]: any = useState(null);
 
     const textQueryConverter = useMemo(() => new TextQueryConverter(props.metadata), [props.metadata]);
     const jsonQueryConverter = useMemo(() => new JsonQueryConverter(props.metadata), [props.metadata]);
@@ -43,6 +47,8 @@ const Filtex = (props: FiltexProps) => {
 
         setText(text);
         setTree(tree);
+
+        handleAutoSubmit({ text, tree });
     };
 
     const handleTextSubmit = () => {
@@ -68,6 +74,8 @@ const Filtex = (props: FiltexProps) => {
 
         setText(text);
         setTree(tree);
+
+        handleAutoSubmit({ text, tree });
     };
 
     const handleTreeSubmit = () => {
@@ -233,6 +241,46 @@ const Filtex = (props: FiltexProps) => {
             handleReset();
         }
     }, [jsonQueryConverter, textQueryConverter, value]);
+
+    const handleAutoSubmit = useCallback((args: { text: string, tree: any }) => {
+        if (props.autoSubmitEnabled) {
+            clearTimeout(changeTimer);
+            setChangeTimer(setTimeout(() => handle(args), 250));
+
+            const handle = (args: { text: string, tree: any }) => {
+                clearTimeout(changeTimer);
+
+                let isValid = false;
+
+                try {
+                    if (mode === 'text') {
+                        new TextQueryValidator(props.metadata, new TextQueryTokenizer(props.metadata)).validate(args.text);
+                    } else if (mode === 'tree') {
+                        new JsonQueryValidator(props.metadata, new JsonQueryTokenizer(props.metadata)).validate(JSON.stringify(args.tree));
+                    }
+                    isValid = true;
+                } catch { }
+
+                if (isValid) {
+                    if (!props.onSubmit) {
+                        return;
+                    }
+
+                    if (args.tree === null || args.text === '') {
+                        props.onSubmit({
+                            tree: null,
+                            text: ''
+                        });
+                    } else {
+                        props.onSubmit({
+                            tree: args.tree,
+                            text: args.text
+                        });
+                    }
+                }
+            };
+        }
+    }, [mode, props, changeTimer]);
 
     return (
         <ThemeContext.Provider value={theme}>
