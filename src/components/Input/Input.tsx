@@ -35,6 +35,21 @@ const Input = (props: InputProps) => {
         setClassName(classes.join(' '));
     }, [props.class, props.type, touched]);
 
+    const handleKeyDown = (e: any) => {
+        const { key, ctrlKey } = e;
+
+        switch (key) {
+            case 'Enter':
+                e.preventDefault();
+                if (ctrlKey) {
+                    if (props.onSubmit) {
+                        props.onSubmit();
+                    }
+                }
+                break;
+        }
+    };
+
     const handleClick = (e: any) => {
         setTimeout(() => {
             if (props.onSuggestionRequested) {
@@ -66,6 +81,7 @@ const Input = (props: InputProps) => {
                 spellCheck={false}
                 value={props.value ?? ''}
                 style={{ width: getWidth() }}
+                onKeyDown={handleKeyDown}
                 onClick={handleClick}
                 onFocus={handleFocus}
                 onBlur={() => setTouched(true)}
