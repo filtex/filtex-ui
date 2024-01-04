@@ -16,6 +16,7 @@ export interface EditorProps {
     label?: string;
     value: string;
     onChange: (opts: OnChangeOptions) => void;
+    onSubmit: () => void;
     coloringFn: (value: string) => string;
     inputRef: React.RefObject<HTMLTextAreaElement>;
 }
@@ -26,6 +27,7 @@ const Editor = (props: EditorProps) => {
         label,
         value,
         onChange,
+        onSubmit,
         coloringFn
     } = props;
 
@@ -65,6 +67,21 @@ const Editor = (props: EditorProps) => {
                             end: e.target.selectionEnd
                         }
                     });
+                }
+                break;
+        }
+    };
+
+    const handleKeyDown = (e: any) => {
+        const { key, ctrlKey } = e;
+
+        switch (key) {
+            case 'Enter':
+                e.preventDefault();
+                if (ctrlKey) {
+                    if (onSubmit) {
+                        onSubmit();
+                    }
                 }
                 break;
         }
@@ -121,6 +138,7 @@ const Editor = (props: EditorProps) => {
                 value={value}
                 onChange={handleChange}
                 onKeyUp={handleKeyUp}
+                onKeyDown={handleKeyDown}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 onClick={handleClick}
