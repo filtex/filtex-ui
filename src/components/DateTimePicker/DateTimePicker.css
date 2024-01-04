@@ -1,0 +1,30 @@
+.filtex .datetimepicker {
+    padding-bottom: 5px;
+}
+
+.filtex .datetimepicker .datetimepicker-content {
+    display: flex;
+    flex-direction: 'row';
+}
+
+.filtex .datetimepicker .datetimepicker-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filtex .datetimepicker .datetimepicker-actions button {
+    display: table;
+    margin: 2.5px 5px;
+    padding: 7.5px 15px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    font-size: 10px;
+}
+
+.filtex .datetimepicker .datetimepicker-actions button:hover {
+    cursor: pointer;
+    background-color: rgba(var(--hover-background-color), 1);
+}
