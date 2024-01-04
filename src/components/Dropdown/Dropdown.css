@@ -1,0 +1,52 @@
+.filtex .dropdown {
+    position: absolute !important;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(var(--background-color), 1);
+    box-shadow: var(--box-shadow);
+    color: rgba(var(--text-color), 1);
+    min-width: 175px;
+    margin-top: -10px;
+    border-radius: var(--border-radius);
+    border: none;
+    outline: var(--border);
+    overflow-x: hidden;
+    overflow-y: hidden;
+    z-index: 9999;
+}
+
+.filtex .dropdown.scrollable {
+    max-height: 180px;
+}
+
+.filtex .dropdown span.item {
+    display: table;
+    padding: 0 15px;
+    min-width: calc(100% - 30px);
+    line-height: 35px;
+    border-bottom: 1px dashed rgba(var(--active-background-color), 1);
+    font-family: Verdana;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.filtex .dropdown span.item:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+.filtex .dropdown span.item:last-child {
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom-color: transparent;
+}
+
+.filtex .dropdown span.item:hover {
+    background-color: rgba(var(--hover-background-color), 1);
+    cursor: pointer;
+}
+
+.filtex .dropdown span.item.active {
+    background-color: rgba(var(--active-background-color), 1);
+    cursor: pointer;
+}
