@@ -1,0 +1,93 @@
+.filtex .timepicker {
+    padding: 5px;
+    min-width: 180px;
+    max-width: 300px;
+}
+
+.filtex .timepicker .timepicker-names {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.filtex .timepicker .timepicker-names div {
+    padding: 15px 2px 7.5px 2px;
+    background-color: transparent;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    flex: 0 12%;
+    font-size: 10px;
+    opacity: .75;
+}
+
+.filtex .timepicker .timepicker-content {
+    display: table;
+    margin: 12.5px 0 0 0;
+}
+
+.filtex .timepicker .hours,
+.filtex .timepicker .minutes,
+.filtex .timepicker .seconds {
+    float: left;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    max-height: 200px;
+    margin: 0 10px 5px 10px;
+}
+
+.filtex .timepicker .hours::-webkit-scrollbar,
+.filtex .timepicker .minutes::-webkit-scrollbar,
+.filtex .timepicker .seconds::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.filtex .timepicker .hours button,
+.filtex .timepicker .minutes button,
+.filtex .timepicker .seconds button {
+    display: table;
+    margin: 3.5px 5px;
+    padding: 7.5px 10px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+}
+
+.filtex .timepicker .hours button:hover,
+.filtex .timepicker .minutes button:hover,
+.filtex .timepicker .seconds button:hover {
+    cursor: pointer;
+    background-color: rgba(var(--hover-background-color), 1);
+}
+
+.filtex .timepicker .hours button.selected,
+.filtex .timepicker .minutes button.selected,
+.filtex .timepicker .seconds button.selected {
+    background-color: rgba(var(--active-background-color), 1);
+}
+
+.filtex .timepicker .timepicker-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filtex .timepicker .timepicker-actions button {
+    display: table;
+    margin: 2.5px 5px;
+    padding: 7.5px 10px;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: rgba(var(--text-color), 1);
+    font-size: 10px;
+}
+
+.filtex .timepicker .timepicker-actions button:hover {
+    cursor: pointer;
+    background-color: #444;
+}
